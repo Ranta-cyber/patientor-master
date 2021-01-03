@@ -10,7 +10,9 @@ import { useStateValue } from "../state";
 
 
 const PatientPage: React.FC = () => {
-  const [{ patients }, dispatch] = useStateValue();
+  const [{ patients }] = useStateValue();
+  const [{ diagnosis }] = useStateValue();
+  
   const { id } = useParams<{ id: string }>();
   const [modalOpen, setModalOpen] = React.useState<boolean>(false);
   const [error, setError] = React.useState<string | undefined>();
@@ -58,7 +60,7 @@ const PatientPage: React.FC = () => {
 
             patientEntry.diagnosisCodes.map(code => (
               <li key={code}>
-                {code}
+                {code} {diagnosis[code].name}
               </li>))
 
             // ( <Codes diagnosisCodes={patientEntry.diagnosisCodes} /> )
