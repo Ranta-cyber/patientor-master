@@ -1,10 +1,11 @@
 import React from "react";
-
+import { AddEntryForm } from "./../AddPatientModal/AddEntryForm";
 import { useParams } from "react-router-dom";
-import { Icon } from "semantic-ui-react";
+import { Icon, Button } from "semantic-ui-react";
 import {
   Entry,
   EntryType,
+  NewEntry,
   HospitalEntry,
   OccupationalHealthcareEntry,
   HealthCheckEntry} from "../types";
@@ -103,16 +104,20 @@ const PatientPage: React.FC = () => {
 
 const EntryDetails: React.FC<{ entry: Entry }> = ({ entry }) => {
   switch (entry.type) {
-    //case EntryType.OccupationalHealthCare:
-    case "OccupationalHealthcare":
+    case EntryType.OccupationalHealthCare:
+   // case "OccupationalHealthcare":
       return <OccupationalHealthCareNotes entry={entry} />;
-    case "Hospital":
+    case EntryType.Hospital:
       return <HospitalNotes entry={entry} />;
-    case "HealthCheck":
+    case EntryType.HealthCheck:
       return <HealthCheckNotes entry={entry} />;
     default:
       return assertNever(entry);
   }
+};
+
+const submitNewEntry = async (values: NewEntry) => {
+  const body = { ...values };
 };
   
 return (
@@ -127,6 +132,14 @@ return (
       <p> SSN: {patient.ssn} </p>
       <p> Birth date: {patient.dateOfBirth} </p>
       <p> Occupation: {patient.occupation} </p>
+
+      <AddEntryForm
+        modalOpen={modalOpen}
+        onSubmit={submitNewEntry}
+        error={error}
+        onCancel={closeModal}
+      />
+      <Button onClick={openModal}>Add New Entry</Button>
 
       <h2> entries</h2>
       {patient.entries.map(patientEntry =>
