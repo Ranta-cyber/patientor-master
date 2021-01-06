@@ -3,13 +3,13 @@ import { useStateValue } from './../state/state'
 import { Grid, Button, Modal } from "semantic-ui-react";
 import { Field, Formik, Form } from "formik";
 
-import {  BaseEntry, 
+import {   
   HealthCheckRating, 
   EntryType , 
-  HospitalEntry,
-Discharge} from "../types";
+  HospitalEntry
+} from "../types";
 
-import { DiagnosisSelection, NumberField, TextField } from './FormField';
+import { DiagnosisSelection, TextField } from './FormField';
 
 import { SelectFieldCheck, CheckOption } from './FormEntryField';
 
@@ -32,10 +32,11 @@ const checkOptions: CheckOption[] = [
   { value: HealthCheckRating.CriticalRisk, label: "CriticalRisk"}
 ];
 
-export const AddEntryForm: React.FC<Props> = ({ onSubmit, onCancel }) => {
+export const AddEntryForm: React.FC<Props> = ({ onSubmit, onCancel, modalOpen }: Props) => {
   const [{ diagnosis }] = useStateValue();
 
   return (
+    <Modal open={modalOpen} onCancel={onCancel} >
     <Formik
     initialValues={{
       type: EntryType.Hospital,
@@ -43,7 +44,7 @@ export const AddEntryForm: React.FC<Props> = ({ onSubmit, onCancel }) => {
       diagnosisCodes: [""],
       description: "",
       date: "",
-      discharge:{date:"", criteria:""}
+      discharge:{date:"2020-12-21", criteria:"own criteria"}
        
     }}
     onSubmit={onSubmit}
@@ -56,9 +57,15 @@ export const AddEntryForm: React.FC<Props> = ({ onSubmit, onCancel }) => {
       if (!values.description) {
         errors.description = requiredError;
       }
+     /*  if (!values.discharge.criteria) {
+        errors.criteria = requiredError;
+      } */
       if (!values.date) {
         errors.date = requiredError;
       }
+     /*  if (!values.discharge.date) {
+        errors.dischargeDate = requiredError;
+      } */
       return errors;
     }}
   >
@@ -89,6 +96,18 @@ export const AddEntryForm: React.FC<Props> = ({ onSubmit, onCancel }) => {
               name="entryType"
               options={checkOptions}
             />
+              <Field
+              label="Discharge criteria"
+              placeholder="dischargeCriteria"
+              name="criteria"
+              component={TextField}
+            />
+            <Field
+              label="Discharge date"
+              placeholder="YYYY-MM-DD"
+              name="dischargeDate"
+              component={TextField}
+            />
           <DiagnosisSelection
             setFieldValue={setFieldValue}
             setFieldTouched={setFieldTouched}
@@ -116,6 +135,7 @@ export const AddEntryForm: React.FC<Props> = ({ onSubmit, onCancel }) => {
       );
     }}
   </Formik>
+  </Modal>
   );
 };
 

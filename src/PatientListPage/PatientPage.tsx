@@ -1,19 +1,23 @@
 import React from "react";
+import axios from "axios";
 import { AddEntryForm } from "./../AddPatientModal/AddEntryForm";
 import { useParams } from "react-router-dom";
 import { Icon, Button } from "semantic-ui-react";
+import { apiBaseUrl } from "../constants";
 import {
   Entry,
   EntryType,
+  Patient,
   NewEntry,
   HospitalEntry,
   OccupationalHealthcareEntry,
-  HealthCheckEntry} from "../types";
-import { useStateValue } from "../state";
+  HealthCheckEntry
+} from "../types";
+import { useStateValue, setEntryAdd } from "../state";
 import { assertNever } from "./../utils";
 
 const PatientPage: React.FC = () => {
-  const [{ patients }] = useStateValue();
+  const [{ patients }, dispatch] = useStateValue();
   const [{ diagnosis }] = useStateValue();
 
   const { id } = useParams<{ id: string }>();
@@ -47,8 +51,8 @@ const PatientPage: React.FC = () => {
               </li>))
           }
         </p>
-         <p>Rating:{entry.healthCheckRating}</p>  
- 
+        <p>Rating:{entry.healthCheckRating}</p>
+
       </div>
     );
   };
@@ -102,25 +106,45 @@ const PatientPage: React.FC = () => {
 
   };
 
-const EntryDetails: React.FC<{ entry: Entry }> = ({ entry }) => {
-  switch (entry.type) {
-    case EntryType.OccupationalHealthCare:
-   // case "OccupationalHealthcare":
-      return <OccupationalHealthCareNotes entry={entry} />;
-    case EntryType.Hospital:
-      return <HospitalNotes entry={entry} />;
-    case EntryType.HealthCheck:
-      return <HealthCheckNotes entry={entry} />;
-    default:
-      return assertNever(entry);
-  }
-};
+  const EntryDetails: React.FC<{ entry: Entry }> = ({ entry }) => {
+    switch (entry.type) {
+      case EntryType.OccupationalHealthCare:
+        // case "OccupationalHealthcare":
+        return <OccupationalHealthCareNotes entry={entry} />;
+      case EntryType.Hospital:
+        return <HospitalNotes entry={entry} />;
+      case EntryType.HealthCheck:
+        return <HealthCheckNotes entry={entry} />;
+      default:
+        return assertNever(entry);
+    }
+  };
 
-const submitNewEntry = async (values: NewEntry) => {
-  const body = { ...values };
-};
-  
-return (
+  const submitNewEntry = async (values: NewEntry) => {
+
+    console.log(' serveriin values:', values);
+
+    
+
+    try {
+
+      const { data: newEntryPatient } = await axios.post<Patient>(
+        `${apiBaseUrl}/patients/${patient.id}/entries`,
+        values
+      );
+
+      dispatch(setEntryAdd(newEntryPatient));
+      //dispatch({ type: "ADD_PATIENT", payload: newPatient });
+
+     
+      closeModal();
+    } catch (e) {
+      console.error(e.response.data);
+      setError(e.response.data.error);
+    }
+  };
+
+  return (
     <div>
       <h3>Patient </h3>
 
